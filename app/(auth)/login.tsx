@@ -7,7 +7,12 @@ import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { createMMKV } from "react-native-mmkv";
 
+export const storage = createMMKV({
+  id: "app-storage",
+  encryptionKey: "1234567890"
+});
 
 export default function LoginScreen() {
   const [emailAddress, setEmailAddress] = useState("");
@@ -20,10 +25,9 @@ export default function LoginScreen() {
     if (emailAddress === "davi@mail.com" && password === "123") {
       setLoading(true);
       setError("");
-      setInterval(() => {
-        setLoading(false);
-        console.log("logou")
-      }, 2000)
+      storage.set('email', emailAddress);
+      storage.set('senha', password);
+      
       router.replace("/(tabs)");
     } else {
       setError("E-mail ou senha inválidos. Por favor verifique suas credenciais ou cadastre-se");

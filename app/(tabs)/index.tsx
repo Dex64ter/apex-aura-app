@@ -1,20 +1,14 @@
-import Button from "@/components/Button";
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 
 export default function Index() {
-  const [showOptionsButtons, setShowOptionsButtons] = useState<boolean>(false);
 
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.footerContainer}>
-        <Button label="Choose a photo" theme="primary" onPress={() => setShowOptionsButtons(true)} />
-        <Button
-          label="Use this photo"
-          onPress={() => setShowOptionsButtons(true)}
-        />
+        
       </View>
     </GestureHandlerRootView>
   );
