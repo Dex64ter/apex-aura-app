@@ -66,10 +66,13 @@
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
           "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
           "isAccessMediaLocationEnabled": true,
-          "granularPermissions": [
-            "audio",
-            "photo"
-          ]
+          "granularPermissions": ["audio", "photo"]
+        }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.557646892463-tbtqor813iolgngb8ea70hilqdsmaf8i.apps.googleusercontent.com"
         }
       ]
     ],

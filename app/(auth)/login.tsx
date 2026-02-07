@@ -8,6 +8,7 @@ import { useState } from "react";
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
+
 export default function LoginScreen() {
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");

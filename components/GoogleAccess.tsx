@@ -1,12 +1,26 @@
-import { FontAwesome } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { GoogleSignin, GoogleSigninButton, isSuccessResponse } from "@react-native-google-signin/google-signin";
+import { StyleSheet } from "react-native";
 
 export default function GoogleAccess() {
+  const handleSignIn = async () => {
+    try {
+      GoogleSignin.configure();
+      await GoogleSignin.hasPlayServices();
+      const signResult = await GoogleSignin.signIn();
+      if (isSuccessResponse(signResult)) {
+        console.log(signResult?.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
-    <Pressable style={styles.container}>
-      <FontAwesome name="google" size={20} color="#fff" />
-      <Text style={styles.text}>Google</Text>
-    </Pressable>
+    <GoogleSigninButton
+      style={styles.container}
+      size={GoogleSigninButton.Size.Wide}
+      color={GoogleSigninButton.Color.Dark}
+      onPress={handleSignIn}
+    />
   );
 }
 
