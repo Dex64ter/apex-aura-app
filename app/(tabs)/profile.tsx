@@ -30,7 +30,11 @@ const BADGES_MOCK = [
 function getTituloPorAura(aura: number) {
   let current = TITULOS_POR_AURA[0];
   for (const t of TITULOS_POR_AURA) {
-    if (aura >= t.min) current = t;
+    if (aura >= t.min) {
+      current = t;
+      storage.set("titulo_atual", t.titulo);
+      storage.set("icon_titulo_atual", t.icon);
+    };
   }
   return current;
 }
