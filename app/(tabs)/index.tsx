@@ -1,7 +1,11 @@
+import ActivityItem from "@/components/ActivityItem";
 import InFocus from "@/components/InFocus";
+import SectionHeader from "@/components/SectionHeader";
+import TeamCard from "@/components/TeamCard";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo } from "react";
 import {
+  FlatList,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,11 +18,62 @@ const ACTIVITIES = [
   {id: 1, type: 'member', aprovals_pending: null, tasks_pending: 1, team: "Elite Vanguard"},
 ]
 
+const TEAMS = [
+  {
+    id: 1,
+    name: "Elite Vanguard",
+    activity: "1 activity available",
+    highlight: true,
+    icon: "flash-on"
+  },
+  {
+    id: 2,
+    name: "Nebula Knights",
+    activity: "All caught up",
+    highlight: false,
+    icon: "star"
+  },
+  {
+    id: 3,
+    name: "Vasco da Gama FC",
+    activity: "All caught up",
+    highlight: true,
+    icon: "shield"
+  }
+];
+
+const RECENT_ACTIVITIES = [
+  {
+    id: 1,
+    title: "Task Approved",
+    subtitle: "2H AGO • ELITE VANGUARD",
+    value: "+15 Aura",
+    positive: true,
+    icon: "checkmark-circle"
+  },
+  {
+    id: 2,
+    title: "Earned 'Explorer' Badge",
+    subtitle: "5H AGO • GLOBAL",
+    value: null,
+    positive: true,
+    icon: "ribbon"
+  },
+  {
+    id: 3,
+    title: "Aura Decay",
+    subtitle: "YESTERDAY • INACTIVITY",
+    value: "-5 Aura",
+    positive: false,
+    icon: "trending-down"
+  }
+];
+
 export default function Index() {
   const iconTituloAtual = useMemo(() => storage.getString("icon_titulo_atual") as keyof typeof Ionicons.glyphMap, []);
   const tituloAtual = useMemo(() => storage.getString("titulo_atual") ?? "", []);
-
   const email = useMemo(() => storage.getString("email") ?? "", []);
+
   const nomeExibicao = useMemo(() => {
     if (email) {
       const parte = email.split("@")[0];
@@ -29,112 +84,121 @@ export default function Index() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      {/* HEADER */}
       <View style={styles.header}>
-        <View style={styles.salutation}>
+        <View 
+        // style={styles.salutation}
+        >
           <Text style={styles.salutationText}>
-            Olá,{" "}
-            <Text style={styles.salutationName}>
-              {nomeExibicao}
-            </Text>
+            Olá, <Text style={styles.salutationName}>{nomeExibicao}</Text>
           </Text>
 
           <View style={styles.tituloAtual}>
-            <Ionicons
-              name={iconTituloAtual}
-              size={24}
-              color="#ffd33d"
-            />
-            <Text style={styles.tituloAtualText}>
-              {tituloAtual}
-            </Text>
+            <Ionicons name={iconTituloAtual} size={20} color="#ffd33d" />
+            <Text style={styles.tituloAtualText}>{tituloAtual}</Text>
           </View>
         </View>
+
         <View style={styles.auraContainer}>
           <View style={styles.box}>
-            <Text style={styles.aura}>
-              1,250
-            </Text>
+            <Text style={styles.aura}>1,250</Text>
             <Text style={styles.textAura}>AURA</Text>
           </View>
         </View>
       </View>
-      <InFocus activities={ACTIVITIES}/>
+
+      <InFocus activities={ACTIVITIES} />
+
+      {/* MY TEAMS */}
+      <SectionHeader title="MY TEAMS" action="SEE ALL" />
+
+      <FlatList
+        horizontal
+        contentContainerStyle={styles.teamsRow}
+        data={TEAMS}
+        renderItem={({ item }) => <TeamCard team={item} />}
+        keyExtractor={item => item.id.toString()}
+      />
+
+      {/* RECENT ACTIVITY */}
+      <SectionHeader title="RECENT ACTIVITY" />
+
+      <View style={styles.activityContainer}>
+        {RECENT_ACTIVITIES.map(item => (
+          <ActivityItem key={item.id} item={item} />
+        ))}
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "#25292e",
     paddingHorizontal: 20,
     paddingTop: 16,
-    paddingBottom: 32,
-    gap: 16
+    paddingBottom: 40,
+    gap: 24
   },
+
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
+    justifyContent: "space-between"
   },
-  salutation: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-    gap: 8,
-  },
+
   salutationText: {
     fontSize: 28,
-    color: "#fff",
+    color: "#fff"
   },
+
   salutationName: {
-    fontSize: 28,
-    color: "#ffd33d",
+    color: "#ffd33d"
   },
+
   tituloAtual: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    
-    backgroundColor: "#25292e",
-
-    padding: 8,
-    borderRadius: 25,
+    gap: 6,
     borderWidth: 1,
     borderColor: "#ffd33d",
-
-    boxSizing: "border-box",
-    shadowColor: '#ffd33d',
-    shadowOffset: { width: 100, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 5.45,
-
-    elevation: 8
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20
   },
+
   tituloAtualText: {
-    fontSize: 16,
-    marginHorizontal: 4,
-    textTransform: "uppercase",
     color: "#ffd33d",
+    textTransform: "uppercase",
+    fontSize: 14
   },
+
   auraContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "flex-start",
+    justifyContent: "flex-start"
   },
+
   box: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8
+    gap: 6
   },
+
   aura: {
     fontSize: 28,
-    color: "#ffd33d",
+    color: "#ffd33d"
   },
+
   textAura: {
-    letterSpacing: 2,
-    color: "#a1a1a1"
-  }
-})
+    color: "#a1a1a1",
+    letterSpacing: 2
+  },
+  
+  teamsRow: {
+    flexDirection: "row",
+    gap: 16
+  },
+
+  activityContainer: {
+    gap: 20
+  },
+
+});
