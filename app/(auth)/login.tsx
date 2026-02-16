@@ -2,6 +2,7 @@ import Br from "@/components/Br";
 import GithubAccess from "@/components/GithubAccess";
 import GoogleAccess from "@/components/GoogleAccess";
 import InputLogin from "@/components/InputLogin";
+import { supabase } from "@/utils/supabase";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
@@ -21,18 +22,41 @@ export default function LoginScreen() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const onLogin = () => {
-    if (emailAddress === "davi@mail.com" && password === "123") {
-      setLoading(true);
-      setError("");
-      storage.set('email', emailAddress);
-      storage.set('senha', password);
-      
-      router.replace("/(tabs)");
-    } else {
+  const signInWithEmail = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: emailAddress,
+      password: password,
+      // options: {
+      //   captchaToken: "captcha-token"
+      // }
+    })
+
+    if (error) {
+      console.log("Login error:", error);
       setError("E-mail ou senha inválidos. Por favor verifique suas credenciais ou cadastre-se");
     }
+    if (data.session && data.session.user.email) {
+      storage.set('email', data.session.user.email);
+      storage.set('api_token', data.session.access_token);
+      router.replace("/(tabs)");
+    }
+
+    setLoading(false);
   }
+
+  // const onLogin = () => {
+  //   if (emailAddress === "davi@mail.com" && password === "123") {
+  //     setLoading(true);
+  //     setError("");
+  //     storage.set('email', emailAddress);
+  //     storage.set('senha', password);
+      
+  //     router.replace("/(tabs)");
+  //   } else {
+  //     setError("E-mail ou senha inválidos. Por favor verifique suas credenciais ou cadastre-se");
+  //   }
+  // }
 
   const handleEmailChange = (text: string) => {
     setEmailAddress(text);
@@ -82,7 +106,7 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.section2}>
-        <Pressable style={styles.loginButton} onPress={onLogin}>
+        <Pressable style={styles.loginButton} onPress={signInWithEmail} disabled={loading}>
           {loading ?
             <ActivityIndicator size="small" color="#25292e" />
             :

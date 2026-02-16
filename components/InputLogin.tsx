@@ -12,7 +12,7 @@ type Props = {
 }
 
 export default function InputLogin({ icon, password, label, placeholder, onChangeText, value }: Props) {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(password ? true : false);
 
   return (
     <View style={styles.container}>

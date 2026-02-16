@@ -1,4 +1,5 @@
 import InputLogin from "@/components/InputLogin";
+import { supabase } from "@/utils/supabase";
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
@@ -69,6 +70,20 @@ export default function SignupScreen() {
       router.replace("/(tabs)");
     }, 1500);
   };
+
+  const signUpWithEmail = async () => {
+    setLoading(true)
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.signUp({
+      email: email,
+      password: senha,
+    })
+    if (error) setError(error.message)
+    if (!session) setError('Please check your inbox for email verification!')
+    setLoading(false)
+  }
 
   return (
     <KeyboardAwareScrollView

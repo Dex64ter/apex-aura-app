@@ -19,10 +19,9 @@ export default function RootLayout() {
     if (!isReady) return;
 
     const inAuthGroup = segments[0] === "(auth)";
-    const email = appStorage.getString('email');
-    const senha = appStorage.getString('senha');
+    const api_token = appStorage.getString('api_token');
 
-    if (email && senha) {
+    if (api_token) {
       setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);
