@@ -12,7 +12,6 @@ import { createMMKV } from "react-native-mmkv";
 
 export const storage = createMMKV({
   id: "app-storage",
-  encryptionKey: "1234567890"
 });
 
 export default function LoginScreen() {
@@ -44,19 +43,6 @@ export default function LoginScreen() {
 
     setLoading(false);
   }
-
-  // const onLogin = () => {
-  //   if (emailAddress === "davi@mail.com" && password === "123") {
-  //     setLoading(true);
-  //     setError("");
-  //     storage.set('email', emailAddress);
-  //     storage.set('senha', password);
-      
-  //     router.replace("/(tabs)");
-  //   } else {
-  //     setError("E-mail ou senha inválidos. Por favor verifique suas credenciais ou cadastre-se");
-  //   }
-  // }
 
   const handleEmailChange = (text: string) => {
     setEmailAddress(text);
