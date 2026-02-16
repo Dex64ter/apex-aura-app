@@ -36,8 +36,6 @@ export default function LoginScreen() {
       setError("E-mail ou senha inválidos. Por favor verifique suas credenciais ou cadastre-se");
     }
     if (data.session && data.session.user.email) {
-      storage.set('email', data.session.user.email);
-      storage.set('api_token', data.session.access_token);
       router.replace("/(tabs)");
     }
 
