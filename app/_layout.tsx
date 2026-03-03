@@ -14,6 +14,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("session", session);
       setSession(session);
       setIsInitialized(true);
     });

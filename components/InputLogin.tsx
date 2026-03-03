@@ -24,8 +24,9 @@ export default function InputLogin({ icon, password, label, placeholder, onChang
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
+          placeholderTextColor={"#adadad"}
           secureTextEntry={showPassword}
-          style={styles.textInput}
+          style={[styles.textInput, {}]}
         />
         {
           password &&

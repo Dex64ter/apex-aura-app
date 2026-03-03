@@ -2,7 +2,11 @@ import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 
-export default function GithubAccess() {
+interface GithubAccessProps {
+  onPress?: () => void;
+}
+
+export default function GithubAccess({ onPress }: GithubAccessProps) {
   const [isPressed, setIsPressed] = React.useState(false);
 
   const handlePressIn = () => setIsPressed(true);
@@ -13,6 +17,7 @@ export default function GithubAccess() {
       style={[styles.container, isPressed && styles.containerPressed]}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
+      onPress={onPress}
     >
       <FontAwesome name="github" size={20} color="#fff" />
       <Text style={styles.text}>Github</Text>

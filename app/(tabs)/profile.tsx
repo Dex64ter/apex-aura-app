@@ -1,3 +1,4 @@
+import { supabase } from "@/utils/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
@@ -57,8 +58,14 @@ export default function ProfileScreen() {
 
   const tituloAtual = useMemo(() => getTituloPorAura(aura), [aura]);
 
-  const handleSair = useCallback(() => {
-    storage.clearAll();
+  const handleSair = useCallback(async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.log("Logout error:", error);
+      return;
+    }
+    
     router.replace("/(auth)/login");
   }, [router]);
 

@@ -8,11 +8,7 @@ import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import { createMMKV } from "react-native-mmkv";
-
-export const storage = createMMKV({
-  id: "app-storage",
-});
+// import { createMMKV } from "react-native-mmkv";
 
 export default function LoginScreen() {
   const [emailAddress, setEmailAddress] = useState("");
@@ -30,16 +26,32 @@ export default function LoginScreen() {
       //   captchaToken: "captcha-token"
       // }
     })
+    console.log("Login data:", data);
 
     if (error) {
       console.log("Login error:", error);
       setError("E-mail ou senha inválidos. Por favor verifique suas credenciais ou cadastre-se");
     }
+
     if (data.session && data.session.user.email) {
       router.replace("/(tabs)");
     }
 
     setLoading(false);
+  }
+
+  const signInWithOAuthGithub = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "github",
+    })
+
+    if (error) {
+      console.log("OAuth login error:", error);
+      setError("Erro ao tentar logar com GitHub. Por favor tente novamente.");
+    }
+
+    console.log("OAuth login data:", data);
+
   }
 
   const handleEmailChange = (text: string) => {
@@ -108,7 +120,7 @@ export default function LoginScreen() {
 
       <View style={styles.section3}>
         <GoogleAccess />
-        <GithubAccess />
+        <GithubAccess onPress={signInWithOAuthGithub}/>
       </View>
 
       <View style={styles.footer}>
