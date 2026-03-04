@@ -13,16 +13,18 @@ export default function RootLayout() {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    console.log("Checking auth session...");
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("session", session);
       setSession(session);
       setIsInitialized(true);
     });
 
+    console.log("Setting up auth listener...");
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
 
+    console.log("Auth listener set up:", authListener);
     return () => {
       authListener.subscription.unsubscribe();
     };
@@ -42,7 +44,7 @@ export default function RootLayout() {
   }, [segments, session, isInitialized, router]);
 
   if (!isInitialized) {
-    return null; // Ou um componente de carregamento
+    return null;
   }
 
   return (

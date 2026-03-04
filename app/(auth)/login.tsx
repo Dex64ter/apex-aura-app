@@ -2,13 +2,16 @@ import Br from "@/components/Br";
 import GithubAccess from "@/components/GithubAccess";
 import GoogleAccess from "@/components/GoogleAccess";
 import InputLogin from "@/components/InputLogin";
+import { AuthService } from "@/services";
 import { supabase } from "@/utils/supabase";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-// import { createMMKV } from "react-native-mmkv";
+import { createMMKV } from "react-native-mmkv";
+
+export const storage = createMMKV();
 
 export default function LoginScreen() {
   const [emailAddress, setEmailAddress] = useState("");
@@ -26,10 +29,8 @@ export default function LoginScreen() {
       //   captchaToken: "captcha-token"
       // }
     })
-    console.log("Login data:", data);
 
     if (error) {
-      console.log("Login error:", error);
       setError("E-mail ou senha inválidos. Por favor verifique suas credenciais ou cadastre-se");
     }
 
@@ -38,6 +39,13 @@ export default function LoginScreen() {
     }
 
     setLoading(false);
+  }
+
+  const handleLogin = async () => {
+    const user = await AuthService.signIn(emailAddress, password);
+    if (user) {
+      console.log("Login bem-sucedido:", user);
+    }
   }
 
   const signInWithOAuthGithub = async () => {
@@ -50,7 +58,7 @@ export default function LoginScreen() {
       setError("Erro ao tentar logar com GitHub. Por favor tente novamente.");
     }
 
-    console.log("OAuth login data:", data);
+    console.log("OAuth login data:", data ? "No data returned" : data);
 
   }
 
@@ -69,7 +77,7 @@ export default function LoginScreen() {
     <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       {/* Símbolo, Título e Subtítulo do aplicativo */}
       <View style={styles.headerContainer} >
-        <Image source={require('../../assets/images/emj04.png')} style={styles.image}/>
+        <Image source={require('../../assets/images/mainIcon.png')} style={styles.image}/>
         <View style={styles.headerText} >
           <Text style={styles.titleApp}>
             Apex{` `}
@@ -102,7 +110,7 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.section2}>
-        <Pressable style={styles.loginButton} onPress={signInWithEmail} disabled={loading}>
+        <Pressable style={styles.loginButton} onPress={handleLogin /* signInWithEmail */} disabled={loading}>
           {loading ?
             <ActivityIndicator size="small" color="#25292e" />
             :
