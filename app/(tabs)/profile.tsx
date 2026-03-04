@@ -1,8 +1,9 @@
-import { supabase } from "@/utils/supabase";
+import { AuthService } from "@/services";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
+  ActivityIndicator,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -46,6 +47,7 @@ export default function ProfileScreen() {
   const [atividadesConcluidas] = useState(12);
   const [atividadesPendentes] = useState(2);
   const [timesInscritos] = useState(1);
+  const [loadingLogout, setLoadingLogout] = useState(false);
 
   const email = useMemo(() => storage.getString("email") ?? "", []);
   const nomeExibicao = useMemo(() => {
@@ -59,14 +61,16 @@ export default function ProfileScreen() {
   const tituloAtual = useMemo(() => getTituloPorAura(aura), [aura]);
 
   const handleSair = useCallback(async () => {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
+    setLoadingLogout(true);
+    try {
+      await AuthService.signOut();
+      router.replace("/(auth)/login");
+    } catch (error) {
       console.log("Logout error:", error);
-      return;
+      return; 
+    } finally {
+      setLoadingLogout(false);
     }
-    
-    router.replace("/(auth)/login");
   }, [router]);
 
   return (
@@ -194,8 +198,15 @@ export default function ProfileScreen() {
         onPress={handleSair}
         android_ripple={{ color: "rgba(255,255,255,0.1)" }}
       >
-        <Ionicons name="log-out-outline" size={20} color="#ff6b6b" />
-        <Text style={styles.sairLabel}>Sair da conta</Text>
+        {
+          loadingLogout ?
+            <ActivityIndicator size="small" color="#ff6b6b" />
+            :
+          <>
+            <Ionicons name="log-out-outline" size={20} color="#ff6b6b" />
+            <Text style={styles.sairLabel}>Sair da conta</Text>
+          </>
+        }
       </Pressable>
 
       <View style={styles.footer} />

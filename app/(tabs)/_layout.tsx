@@ -13,7 +13,8 @@ export default function TabsLayout() {
         headerStyle: {
           backgroundColor: "#25292e"
         },
-        tabBarHideOnKeyboard: true
+        tabBarHideOnKeyboard: true,
+        headerShown: true,
       }}
     >
       <Tabs.Screen

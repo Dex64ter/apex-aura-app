@@ -1,7 +1,7 @@
 // services/auth/auth.nest.service.ts
+import { TypeSessionSupabase } from '@/models/auth/authModels'
 import { User } from '@/models/users/users'
 import { apiClient } from '@/services/http/api'
-import { User as SupabaseUser } from "@supabase/supabase-js"
 import type { IAuthService } from './auth.service'
 
 export const AuthNestService: IAuthService = {
@@ -10,7 +10,7 @@ export const AuthNestService: IAuthService = {
       '/auth/login',
       { email, password }
     )
-    return data.user as SupabaseUser
+    return data as TypeSessionSupabase
   },
   signWithOAuth: async (provider) => {
     const { data } = await apiClient.get(`/auth/oauth/${provider}`)

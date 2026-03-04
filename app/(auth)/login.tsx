@@ -20,31 +20,18 @@ export default function LoginScreen() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const signInWithEmail = async () => {
-    setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: emailAddress,
-      password: password,
-      // options: {
-      //   captchaToken: "captcha-token"
-      // }
-    })
-
-    if (error) {
-      setError("E-mail ou senha inválidos. Por favor verifique suas credenciais ou cadastre-se");
-    }
-
-    if (data.session && data.session.user.email) {
-      router.replace("/(tabs)");
-    }
-
-    setLoading(false);
-  }
+  // const { loading, error, execute } = useApi<{session: any; user: User}>('/auth/login', 'POST');
 
   const handleLogin = async () => {
-    const user = await AuthService.signIn(emailAddress, password);
-    if (user) {
-      console.log("Login bem-sucedido:", user);
+    setLoading(true);
+    try {
+      const { session } = await AuthService.signIn(emailAddress, password);
+      if (session) router.replace("/(tabs)")
+    } catch (error) {
+      setError("E-mail ou senha inválidos. Por favor verifique suas credenciais ou cadastre-se");
+      console.log("Login error:", error);
+    } finally {
+      setLoading(false);
     }
   }
 

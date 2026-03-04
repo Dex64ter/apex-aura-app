@@ -93,7 +93,7 @@ export default function SignupScreen() {
       {/* Header */}
       <View style={styles.headerContainer}>
         <Image
-          source={require("../../assets/images/emj04.png")}
+          source={require("../../assets/images/mainIcon.png")}
           style={styles.image}
         />
         <View style={styles.headerText}>
@@ -163,75 +163,6 @@ export default function SignupScreen() {
               clearError();
             }}
             password
-          />
-        </View>
-
-        {/* Seção: Localização */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <FontAwesome6 name="location-dot" size={18} color="#ffd33d" />
-            <Text style={styles.sectionTitle}>Localização</Text>
-          </View>
-          <InputLogin
-            icon="globe"
-            label="País"
-            placeholder="Ex: Brasil"
-            value={pais}
-            onChangeText={(t) => {
-              setPais(t);
-              clearError();
-            }}
-          />
-          <InputLogin
-            icon="map-marker"
-            label="Estado (opcional)"
-            placeholder="Ex: SP"
-            value={estado}
-            onChangeText={setEstado}
-          />
-          <InputLogin
-            icon="map-marker"
-            label="Cidade"
-            placeholder="Sua cidade"
-            value={cidade}
-            onChangeText={(t) => {
-              setCidade(t);
-              clearError();
-            }}
-          />
-          <InputLogin
-            icon="envelope"
-            label="CEP (opcional)"
-            placeholder="00000-000"
-            value={cep}
-            onChangeText={setCep}
-          />
-          <InputLogin
-            icon="home"
-            label="Endereço"
-            placeholder="Rua, avenida..."
-            value={endereco}
-            onChangeText={(t) => {
-              setEndereco(t);
-              clearError();
-            }}
-          />
-          <InputLogin
-            icon="hashtag"
-            label="Número"
-            placeholder="Nº"
-            value={numero}
-            onChangeText={(t) => {
-              setNumero(t);
-              clearError();
-            }}
-          />
-          <InputLogin
-            icon="building"
-            label="Complemento (opcional)"
-            placeholder="Apto, bloco, referência..."
-            value={complemento}
-            onChangeText={setComplemento}
           />
         </View>
 
