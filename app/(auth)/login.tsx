@@ -1,6 +1,5 @@
 import Br from "@/components/Br";
 import GithubAccess from "@/components/GithubAccess";
-import GoogleAccess from "@/components/GoogleAccess";
 import InputLogin from "@/components/InputLogin";
 import { AuthService } from "@/services";
 import { supabase } from "@/utils/supabase";
@@ -114,7 +113,7 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.section3}>
-        <GoogleAccess />
+        {/* <GoogleAccess /> */}
         <GithubAccess onPress={signInWithOAuthGithub}/>
       </View>
 

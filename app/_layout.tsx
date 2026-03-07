@@ -24,7 +24,6 @@ export default function RootLayout() {
       setSession(session);
     });
 
-    console.log("Auth listener set up:", authListener);
     return () => {
       authListener.subscription.unsubscribe();
     };

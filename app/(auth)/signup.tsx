@@ -1,4 +1,5 @@
 import InputLogin from "@/components/InputLogin";
+import { AuthService } from "@/services";
 import { supabase } from "@/utils/supabase";
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
@@ -19,20 +20,11 @@ export default function SignupScreen() {
   const router = useRouter();
 
   // Dados pessoais (obrigatórios)
-  const [nome, setNome] = useState("");
-  const [sobrenome, setSobrenome] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [confirmarSenha, setConfirmarSenha] = useState("");
-
-  // Localização
-  const [pais, setPais] = useState("");
-  const [estado, setEstado] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [cep, setCep] = useState("");
-  const [endereco, setEndereco] = useState("");
-  const [numero, setNumero] = useState("");
-  const [complemento, setComplemento] = useState("");
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -42,33 +34,33 @@ export default function SignupScreen() {
   };
 
   const validate = (): string | null => {
-    if (!nome.trim()) return "Nome é obrigatório.";
-    if (!sobrenome.trim()) return "Sobrenome é obrigatório.";
+    if (!firstName.trim()) return "Nome é obrigatório.";
+    if (!lastName.trim()) return "Sobrenome é obrigatório.";
     if (!email.trim()) return "E-mail é obrigatório.";
     if (!EMAIL_REGEX.test(email)) return "Informe um e-mail válido.";
-    if (!senha) return "Senha é obrigatória.";
-    if (senha.length < 6) return "Senha deve ter no mínimo 6 caracteres.";
-    if (senha !== confirmarSenha) return "As senhas não coincidem.";
-    if (!pais.trim()) return "País é obrigatório.";
-    if (!cidade.trim()) return "Cidade é obrigatória.";
-    if (!endereco.trim()) return "Endereço é obrigatório.";
-    if (!numero.trim()) return "Número é obrigatório.";
+    if (!password) return "Senha é obrigatória.";
+    if (password.length < 6) return "Senha deve ter no mínimo 6 caracteres.";
+    if (password !== confirmPassword) return "As senhas não coincidem.";
     return null;
   };
 
-  const onSignup = () => {
+  const onSignup = async () => {
     const validationError = validate();
     if (validationError) {
       setError(validationError);
       return;
     }
+
     setError("");
-    setLoading(true);
-    // TODO: integrar com API de cadastro
-    setTimeout(() => {
+    try {
+      setLoading(true);
+      const { data } = await AuthService.signUp({email, password, firstName, lastName})
+      if (data) router.replace('/(tabs)')
+    } catch (error) {
+      console.error(error);
+    } finally {
       setLoading(false);
-      router.replace("/(tabs)");
-    }, 1500);
+    }
   };
 
   const signUpWithEmail = async () => {
@@ -78,7 +70,7 @@ export default function SignupScreen() {
       error,
     } = await supabase.auth.signUp({
       email: email,
-      password: senha,
+      password: password,
     })
     if (error) setError(error.message)
     if (!session) setError('Please check your inbox for email verification!')
@@ -116,9 +108,9 @@ export default function SignupScreen() {
             icon="user"
             label="Nome"
             placeholder="Seu nome"
-            value={nome}
+            value={firstName}
             onChangeText={(t) => {
-              setNome(t);
+              setFirstName(t);
               clearError();
             }}
           />
@@ -126,9 +118,9 @@ export default function SignupScreen() {
             icon="user"
             label="Sobrenome"
             placeholder="Seu sobrenome"
-            value={sobrenome}
+            value={lastName}
             onChangeText={(t) => {
-              setSobrenome(t);
+              setLastName(t);
               clearError();
             }}
           />
@@ -146,9 +138,9 @@ export default function SignupScreen() {
             icon="lock"
             label="Senha"
             placeholder="Mínimo 6 caracteres"
-            value={senha}
+            value={password}
             onChangeText={(t) => {
-              setSenha(t);
+              setPassword(t);
               clearError();
             }}
             password
@@ -157,9 +149,9 @@ export default function SignupScreen() {
             icon="lock"
             label="Confirmar senha"
             placeholder="Repita a senha"
-            value={confirmarSenha}
+            value={confirmPassword}
             onChangeText={(t) => {
-              setConfirmarSenha(t);
+              setConfirmPassword(t);
               clearError();
             }}
             password

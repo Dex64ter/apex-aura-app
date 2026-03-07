@@ -1,7 +1,8 @@
 // services/auth/auth.supabase.service.ts
+import { SignUpData } from '@/models/auth/authModels'
 import { supabase } from '@/utils/supabase'
-import type { IAuthService } from './auth.service'
 import { Provider } from '@supabase/supabase-js'
+import type { IAuthService } from './auth.service'
 
 export const AuthSupabaseService: IAuthService = {
   signIn: async (email, password) => {
@@ -16,10 +17,20 @@ export const AuthSupabaseService: IAuthService = {
     return data
   },
 
-  signUp: async (email, password) => {
-    const { data, error } = await supabase.auth.signUp({ email, password })
+  signUp: async ({firstName, lastName, email, password}: SignUpData) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName
+        }
+      }
+    })
+    
     if (error) throw error
-    return data.user
+    return data
   },
   
   signOut: async () => {

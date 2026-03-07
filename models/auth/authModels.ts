@@ -6,4 +6,12 @@ interface TypeSessionSupabase {
   weakPassword?: WeakPassword | undefined;
 }
 
-export type { TypeSessionSupabase };
+interface SignUpData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+export type { SignUpData, TypeSessionSupabase };
+
