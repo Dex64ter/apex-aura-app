@@ -13,5 +13,13 @@ interface SignUpData {
   password: string;
 }
 
-export type { SignUpData, TypeSessionSupabase };
+interface CreateUserDTO {
+  name: string;
+  email: string;
+  password: string;
+  avatarUrl?: string;
+  isVerified?: boolean;
+}
+
+export type { CreateUserDTO, SignUpData, TypeSessionSupabase };
 

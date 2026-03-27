@@ -1,4 +1,3 @@
-import { AuthService } from "@/services";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
@@ -63,7 +62,8 @@ export default function ProfileScreen() {
   const handleSair = useCallback(async () => {
     setLoadingLogout(true);
     try {
-      await AuthService.signOut();
+      // await AuthService.signOut();
+      storage.remove("token");
       router.replace("/(auth)/login");
     } catch (error) {
       console.log("Logout error:", error);

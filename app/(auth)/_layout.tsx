@@ -6,19 +6,28 @@ export default function AuthLayout() {
     <>
       <StatusBar style={"light"} />
       <Stack screenOptions={{
-        headerShown: false,
+        headerShown: false
       }}>
         <Stack.Screen
           name="login"
-          // options={{
-          //   headerShown: false
-          // }}
+        />
+        <Stack.Screen
+          name="authentication"
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="verify-code"
+          options={{
+            headerShown: false
+          }}
         />
         <Stack.Screen
           name="signup"
-          // options={{
-          //   headerShown: false
-          // }}
+          options={{
+            headerShown: false
+          }}
         />
       </Stack>
     </>

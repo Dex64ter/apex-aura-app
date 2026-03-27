@@ -1,3 +1,4 @@
+import { storage } from "@/app/(auth)/login";
 import env from "@/environments";
 import axios, {
   AxiosRequestConfig,
@@ -45,10 +46,11 @@ export const apiClient = axios.create({
   },
 });
 
+
 // Interceptor de request — injeta token se existir
 apiClient.interceptors.request.use((config) => {
-  // Exemplo: const token = storage.getString('token')
-  // if (token) config.headers.Authorization = `Bearer ${token}`
+  const token = storage.getString('token')
+  if (token) config.headers.Authorization = `Bearer ${token}`
   return config;
 });
 

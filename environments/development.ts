@@ -1,13 +1,9 @@
 const development = {
-  provider: 'supabase', // 'nest' as 'nest'
+  provider: 'nest', // 'nest' as 'nest'
   nest: {
-    apiUrl: 'http://localhost:3000',
+    apiUrl: 'http://192.168.15.8:8080',
     timeout: 10000,
-  },
-  supabase: {
-    url: process.env.EXPO_PUBLIC_SUPABASE_URL ?? '',
-    key: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '',
-  },
+  }
 }
 
 export default development

@@ -1,9 +1,9 @@
-import { SignUpData, TypeSessionSupabase } from "@/models/auth/authModels"
-import { Provider } from "@supabase/supabase-js"
+import { CreateUserDTO } from "@/models/auth/authModels"
 
-export interface IAuthService {
-  signIn(email: string, password: string): Promise<TypeSessionSupabase>
-  signWithOAuth(provider: Provider): Promise<any>
-  signUp(data: SignUpData): Promise<any>
-  signOut(): Promise<void | any>
+export interface NestAuthService {
+  signIn(email: string, password: string): Promise<any>
+  signWithOAuth(provider: string): Promise<any>
+  signUp(createUser: CreateUserDTO, token: string): Promise<any>
+  requestCode(email: string): Promise<any>
+  verifyCode(email: string, code: string): Promise<{tempToken: string}>
 }

@@ -19,13 +19,15 @@ export default function LoginScreen() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  // const { loading, error, execute } = useApi<{session: any; user: User}>('/auth/login', 'POST');
-
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const { session } = await AuthService.signIn(emailAddress, password);
-      if (session) router.replace("/(tabs)")
+      const data = await AuthService.signIn(emailAddress, password);
+      console.log(data.access_token);
+      storage.set("token", data.access_token);
+      storage.set("type_token", 'Bearer');
+
+      if (data) router.replace("/(tabs)")
     } catch (error) {
       setError("E-mail ou senha inválidos. Por favor verifique suas credenciais ou cadastre-se");
       console.log("Login error:", error);
@@ -120,7 +122,7 @@ export default function LoginScreen() {
       <View style={styles.footer}>
         <Text style={{ color: "#a1a1a1" }}>
           Ainda nao possui uma conta?
-          <Link href="/signup" style={{ color: "#ffd33d" }}> Clique aqui</Link>
+          <Link href="/authentication" style={{ color: "#ffd33d" }}> Clique aqui</Link>
         </Text>
       </View>
     </KeyboardAwareScrollView>

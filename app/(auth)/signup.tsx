@@ -63,20 +63,6 @@ export default function SignupScreen() {
     }
   };
 
-  const signUpWithEmail = async () => {
-    setLoading(true)
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    })
-    if (error) setError(error.message)
-    if (!session) setError('Please check your inbox for email verification!')
-    setLoading(false)
-  }
-
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={styles.container}

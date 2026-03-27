@@ -1,28 +1,42 @@
 // services/auth/auth.nest.service.ts
-import { TypeSessionSupabase } from '@/models/auth/authModels'
-import { User } from '@/models/users/users'
+import { CreateUserDTO } from '@/models/auth/authModels'
 import { apiClient } from '@/services/http/api'
-import type { IAuthService } from './auth.service'
+import type { NestAuthService } from './auth.service'
 
-export const AuthNestService: IAuthService = {
+export const AuthNestService: NestAuthService = {
   signIn: async (email, password) => {
-    const { data } = await apiClient.post<{session: any, user: User}>(
+    console.log("[Login] Executing sign in")
+    const { data } = await apiClient.post(
       '/auth/login',
       { email, password }
     )
-    return data as TypeSessionSupabase
+
+    return data
   },
+
   signWithOAuth: async (provider) => {
     const { data } = await apiClient.get(`/auth/oauth/${provider}`)
     // Aqui precisamos lidar com o redirecionamento para o provedor OAuth
     // e a troca de tokens, dependendo de como seu backend está configurado.
     return data.user as any
   },
-  signUp: async (email, password) => {
-    const { data } = await apiClient.post('/auth/register', { email, password })
+
+  signUp: async (dataUser: CreateUserDTO, token: string) => {
+    const { data } = await apiClient.post('/auth/signup', dataUser, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
     return data
   },
-  signOut: async () => {
-    await apiClient.post('/auth/logout')
+
+  requestCode: async (email: string) => {
+    const response = await apiClient.post('/auth/request-code', email)
+    console.log(response)
+    return response
+  },
+
+  verifyCode: async (email, code) => {
+    return apiClient.post('/auth/verify-code', { email, code })
   },
 }

@@ -1,48 +1,58 @@
-import { supabase } from "@/utils/supabase";
-import { Session } from "@supabase/supabase-js";
+// import { Session } from "@supabase/supabase-js";
+import { apiClient } from "@/services/http/api";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { KeyboardProvider } from "react-native-keyboard-controller";
+import { storage } from "./(auth)/login";
 
 export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
 
-  const [session, setSession] = useState<Session | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    console.log("Checking auth session...");
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setIsInitialized(true);
-    });
+    const init = async () => {
+      console.log("Checking auth session...");
 
-    console.log("Setting up auth listener...");
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+      const token = storage.getString("token");
 
-    return () => {
-      authListener.subscription.unsubscribe();
+      if (!token) {
+        setIsAuthenticated(false);
+        return;
+      }
+
+      try {
+        await apiClient.get("/auth/me");
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.log("Error checking auth session:", error);
+        setIsAuthenticated(false);
+      }
     };
-  }, []);
+
+    init();
+  }, [router]);
 
   useEffect(() => {
-    if (!isInitialized) return;
+    if (isAuthenticated === null) return;
 
     const inAuthGroup = segments[0] === "(auth)";
 
-    if (!session && !inAuthGroup) {
+    if (!isAuthenticated && !inAuthGroup) {
+      console.log("Redirecting to login...");
       router.replace("/(auth)/login");
-    } else if (session && inAuthGroup) {
+    }
+
+    if (isAuthenticated && inAuthGroup) {
+      console.log("Redirecting to home...");
       router.replace("/(tabs)");
     }
 
-  }, [segments, session, isInitialized, router]);
+  }, [segments, isAuthenticated, router]);
 
-  if (!isInitialized) {
+  if (isAuthenticated === null) {
     return null;
   }
 
