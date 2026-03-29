@@ -31,8 +31,7 @@ export default function TeamsScreen() {
 
   return (
     <ScrollView
-      style={styles.scroll}
-      contentContainerStyle={styles.container}
+      contentContainerStyle={styles.scroll}
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.header}>
@@ -44,7 +43,7 @@ export default function TeamsScreen() {
 
       <Pressable
         style={styles.createButton}
-        onPress={() => {}}
+        onPress={() => { }}
         android_ripple={{ color: "rgba(37,41,46,0.3)" }}
       >
         <Ionicons name="add-circle" size={22} color="#25292e" />
@@ -66,7 +65,7 @@ export default function TeamsScreen() {
             <Pressable
               key={team.id}
               style={styles.teamCard}
-              onPress={() => {}}
+              onPress={() => { }}
               android_ripple={{ color: "rgba(255,211,61,0.1)" }}
             >
               <View style={styles.teamCardHeader}>
@@ -114,10 +113,8 @@ const styles = StyleSheet.create({
   scroll: {
     flex: 1,
     backgroundColor: "#25292e",
-  },
-  container: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 20,
     paddingBottom: 32,
   },
   header: {

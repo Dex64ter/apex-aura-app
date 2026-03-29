@@ -1,8 +1,10 @@
+import Br from "@/components/Br";
+import Checkbox from "@/components/CheckBox";
+import GithubAccess from "@/components/GithubAccess";
 import InputLogin from "@/components/InputLogin";
-import { AuthService } from "@/services";
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -12,19 +14,33 @@ import {
   View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SignupScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
+
+  useEffect(() => {
+    const resetValues = () => {
+      setFullName('');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
+      setAcceptTerms(false);
+      setLoading(false);
+    };
+    return () => {
+      resetValues();
+    }
+  }, [router]);
 
   const clearError = () => {
     if (error) setError("");
@@ -50,20 +66,10 @@ export default function SignupScreen() {
     setError("");
     setLoading(true);
     
-    try {
-      const { data } = await AuthService.signUp({
-        name: fullName,
-        email,
-        password,
-        
-        isVerified: true
-      })
-      if (data) router.replace('/(tabs)')
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    router.push({
+      pathname: "/signup-avatar",
+      params: { name: fullName, email, password },
+    });
   };
 
   return (
@@ -88,7 +94,7 @@ export default function SignupScreen() {
         </View>
 
         <View style={styles.form}>
-          <View style={styles.section}>
+          <View>
             <View style={styles.sectionHeader}>
               <FontAwesome name="user" size={18} color="#ffd33d" />
               <Text style={styles.sectionTitle}>Dados pessoais</Text>
@@ -137,16 +143,25 @@ export default function SignupScreen() {
               password
             />
           </View>
+            
+          <View style={styles.termsAndConditions}>
+            <Checkbox value={acceptTerms} onValueChange={setAcceptTerms} size={18} />
+            <Text style={styles.termsAndConditionsText}>
+              Eu concordo com os{" "}
+              <Text style={styles.termsAndConditionsLink}>Termos de uso</Text> e{" "}
+              <Text style={styles.termsAndConditionsLink}>Política de privacidade</Text>.
+            </Text>
+          </View>
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
           <Pressable
             style={({ pressed }) => [
-              styles.submitButton,
+              acceptTerms ? styles.submitButton : styles.submitButtonDisabled,
               pressed && { opacity: 0.85 },
             ]}
             onPress={onSignup}
-            disabled={loading}
+            disabled={loading || !acceptTerms}
           >
             {loading ? (
               <ActivityIndicator size="small" color="#25292e" />
@@ -166,6 +181,14 @@ export default function SignupScreen() {
               Entrar
             </Link>
           </Text>
+        </View>
+
+        <View style={{ width: "85%", marginTop: 18 }}>
+          <Br label="ou cadastre-se com" />
+        </View>
+
+        <View style={{ width: "85%", marginTop: 18 }}>
+          <GithubAccess />
         </View>
       </KeyboardAwareScrollView>
     </SafeAreaView>
@@ -206,9 +229,7 @@ const styles = StyleSheet.create({
     width: "85%",
     maxWidth: 400,
   },
-  section: {
-    marginBottom: 14,
-  },
+
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -227,6 +248,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: "center",
   },
+
   submitButton: {
     backgroundColor: "#ffd33d",
     flexDirection: "row",
@@ -238,20 +260,48 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 8,
   },
+
+  submitButtonDisabled: {
+    backgroundColor: "#a1a1a1",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    height: 48,
+    borderRadius: 16,
+    gap: 10,
+    marginTop: 8,
+  },
+
   submitButtonText: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#25292e",
   },
   footer: {
-    marginTop: 24,
+    marginTop: 10,
     alignItems: "center",
   },
   footerText: {
     color: "#a1a1a1",
-    fontSize: 15,
+    fontSize: 14,
   },
   footerLink: {
+    color: "#ffd33d",
+    fontWeight: "600",
+  },
+
+  termsAndConditions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 28,
+  },
+  termsAndConditionsText: {
+    color: "#a1a1a1",
+    fontSize: 10,
+  },
+  termsAndConditionsLink: {
     color: "#ffd33d",
     fontWeight: "600",
   },

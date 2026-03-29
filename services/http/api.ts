@@ -1,5 +1,5 @@
-import { storage } from "@/app/(auth)/login";
 import env from "@/environments";
+import { storage } from "@/storage";
 import axios, {
   AxiosRequestConfig,
   AxiosResponse,

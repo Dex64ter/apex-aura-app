@@ -2,15 +2,13 @@ import Br from "@/components/Br";
 import GithubAccess from "@/components/GithubAccess";
 import InputLogin from "@/components/InputLogin";
 import { AuthService } from "@/services";
+import { storage } from "@/storage";
 import { supabase } from "@/utils/supabase";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import { createMMKV } from "react-native-mmkv";
-
-export const storage = createMMKV();
 
 export default function LoginScreen() {
   const [emailAddress, setEmailAddress] = useState("");
@@ -23,10 +21,10 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       const data = await AuthService.signIn(emailAddress, password);
-      
+      console.log(JSON.stringify(data, null, 2))
       storage.set("token", data.access_token);
       storage.set("type_token", 'Bearer');
-
+      storage.set("user", JSON.stringify(data.user));
       if (data) router.replace("/(tabs)")
     } catch (error) {
       setError("E-mail ou senha inválidos. Por favor verifique suas credenciais ou cadastre-se");

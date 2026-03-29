@@ -1,15 +1,16 @@
+import { storage } from "@/storage";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View
 } from "react-native";
-import { storage } from "../(auth)/login";
 
 // Mock: níveis de título por faixa de aura
 const TITULOS_POR_AURA = [
@@ -42,28 +43,18 @@ function getTituloPorAura(aura: number) {
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const [aura] = useState(320); // Mock: total de aura do usuário
   const [atividadesConcluidas] = useState(12);
   const [atividadesPendentes] = useState(2);
   const [timesInscritos] = useState(1);
   const [loadingLogout, setLoadingLogout] = useState(false);
-
-  const email = useMemo(() => storage.getString("email") ?? "", []);
-  const nomeExibicao = useMemo(() => {
-    if (email) {
-      const parte = email.split("@")[0];
-      return parte ? parte.charAt(0).toUpperCase() + parte.slice(1) : "Membro";
-    }
-    return "Membro";
-  }, [email]);
+  const { name, email, avatarUrl, aura } = useMemo(() => JSON.parse(storage.getString("user") ?? ""), []);
 
   const tituloAtual = useMemo(() => getTituloPorAura(aura), [aura]);
 
   const handleSair = useCallback(async () => {
     setLoadingLogout(true);
     try {
-      // await AuthService.signOut();
-      storage.remove("token");
+      storage.clearAll();
       router.replace("/(auth)/login");
     } catch (error) {
       console.log("Logout error:", error);
@@ -81,10 +72,22 @@ export default function ProfileScreen() {
     >
       {/* Cabeçalho: avatar + nome + email */}
       <View style={styles.header}>
-        <View style={styles.avatarContainer}>
-          <Text style={styles.avatarText}>{nomeExibicao.charAt(0)}</Text>
-        </View>
-        <Text style={styles.nome}>{nomeExibicao}</Text>
+        {
+          avatarUrl
+            ? (
+              <View style={styles.avatarImageContainer}>
+                <Image
+                  source={{ uri: avatarUrl }}
+                  style={styles.avatarImage}
+                />
+              </View>
+            ) : (
+              <View style={styles.avatarContainer}>
+                <Text style={styles.avatarText}>{name.charAt(0)}</Text>
+              </View>
+            )
+        }
+        <Text style={styles.nome}>{name}</Text>
         <Text style={styles.email}>{email || "—"}</Text>
       </View>
 
@@ -231,10 +234,11 @@ const styles = StyleSheet.create({
   avatarContainer: {
     width: 88,
     height: 88,
-    borderRadius: 44,
+    borderRadius: 10,
     backgroundColor: "#3d4349",
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
     borderWidth: 3,
     borderColor: "#ffd33d",
   },
@@ -242,6 +246,22 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "bold",
     color: "#ffd33d",
+  },
+  avatarImageContainer: {
+    width: 88,
+    height: 88,
+    borderRadius: 10,
+    backgroundColor: "#3a3f46",
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 8,
+    overflow: "hidden",
+    borderWidth: 3,
+    borderColor: "#ffd33d",
+  },
+  avatarImage: {
+    width: "100%",
+    height: "100%",
   },
   nome: {
     fontSize: 22,

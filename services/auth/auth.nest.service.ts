@@ -21,12 +21,8 @@ export const AuthNestService: NestAuthService = {
     return data.user as any
   },
 
-  signUp: async (dataUser: CreateUserDTO, token: string) => {
-    const { data } = await apiClient.post('/auth/signup', dataUser, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    })
+  signUp: async (dataUser: CreateUserDTO) => {
+    const { data } = await apiClient.post('/auth/signup', dataUser);
     return data
   },
 

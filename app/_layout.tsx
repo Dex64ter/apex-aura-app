@@ -1,39 +1,39 @@
 // import { Session } from "@supabase/supabase-js";
 import { apiClient } from "@/services/http/api";
+import { storage } from "@/storage";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { KeyboardProvider } from "react-native-keyboard-controller";
-import { storage } from "./(auth)/login";
 
 export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
-
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
+  const checkAuth = async () => {
+    const token = storage.getString("token");
+    if (!token) {
+      setIsAuthenticated(false);
+      return;
+    }
+    try {
+      await apiClient.get("/auth/me");
+      setIsAuthenticated(true);
+    } catch {
+      setIsAuthenticated(false);
+    }
+  };
+
   useEffect(() => {
-    const init = async () => {
-      console.log("Checking auth session...");
+    checkAuth();
 
-      const token = storage.getString("token");
-      console.log("[GLOBAL LAYOUT]: Token =>", token);
-      if (!token) {
-        setIsAuthenticated(false);
-        return;
-      }
+    const listener = storage.addOnValueChangedListener((key) => {
+      if (key === "token") checkAuth();
+    });
 
-      try {
-        await apiClient.get("/auth/me");
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.log("Error checking auth session:", error);
-        setIsAuthenticated(false);
-      }
-    };
-
-    init();
-  }, [router]);
+    return () => listener.remove();
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated === null) return;
@@ -41,20 +41,17 @@ export default function RootLayout() {
     const inAuthGroup = segments[0] === "(auth)";
 
     if (!isAuthenticated && !inAuthGroup) {
-      console.log("Redirecting to login...");
       router.replace("/(auth)/login");
     }
 
     if (isAuthenticated && inAuthGroup) {
-      console.log("Redirecting to home...");
       router.replace("/(tabs)");
     }
 
   }, [segments, isAuthenticated, router]);
 
-  if (isAuthenticated === null) {
-    return null;
-  }
+  if (isAuthenticated === null) return null;
+  
 
   return (
     <KeyboardProvider>

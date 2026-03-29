@@ -2,6 +2,7 @@ import ActivityItem from "@/components/ActivityItem";
 import InFocus from "@/components/InFocus";
 import SectionHeader from "@/components/SectionHeader";
 import TeamCard from "@/components/TeamCard";
+import { storage } from "@/storage";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo } from "react";
 import {
@@ -11,7 +12,6 @@ import {
   Text,
   View
 } from "react-native";
-import { storage } from "../(auth)/login";
 
 const ACTIVITIES = [
   {id: 0, type: 'leader', aprovals_pending: 3, tasks_pending: null, team: null},
@@ -72,25 +72,15 @@ const RECENT_ACTIVITIES = [
 export default function Index() {
   const iconTituloAtual = useMemo(() => storage.getString("icon_titulo_atual") as keyof typeof Ionicons.glyphMap, []);
   const tituloAtual = useMemo(() => storage.getString("titulo_atual") ?? "", []);
-  const email = useMemo(() => storage.getString("email") ?? "", []);
-
-  const nomeExibicao = useMemo(() => {
-    if (email) {
-      const parte = email.split("@")[0];
-      return parte ? parte.charAt(0).toUpperCase() + parte.slice(1) : "Membro";
-    }
-    return "Membro";
-  }, [email]);
+  const { name, aura } = useMemo(() => JSON.parse(storage.getString("user") ?? ""), []);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
       {/* HEADER */}
       <View style={styles.header}>
-        <View 
-        // style={styles.salutation}
-        >
+        <View>
           <Text style={styles.salutationText}>
-            Olá, <Text style={styles.salutationName}>{nomeExibicao}</Text>
+            Olá, <Text style={styles.salutationName}>{name.split(" ")[0]}</Text>
           </Text>
 
           <View style={styles.tituloAtual}>
@@ -101,7 +91,7 @@ export default function Index() {
 
         <View style={styles.auraContainer}>
           <View style={styles.box}>
-            <Text style={styles.aura}>1,250</Text>
+            <Text style={styles.aura}>{aura}</Text>
             <Text style={styles.textAura}>AURA</Text>
           </View>
         </View>
@@ -136,7 +126,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#25292e",
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 20,
     paddingBottom: 40,
     gap: 24
   },
@@ -148,6 +138,7 @@ const styles = StyleSheet.create({
 
   salutationText: {
     fontSize: 28,
+    marginBottom: 6,
     color: "#fff"
   },
 
