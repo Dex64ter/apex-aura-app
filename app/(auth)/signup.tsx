@@ -1,6 +1,5 @@
 import InputLogin from "@/components/InputLogin";
 import { AuthService } from "@/services";
-import { supabase } from "@/utils/supabase";
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
@@ -13,19 +12,17 @@ import {
   View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SignupScreen() {
   const router = useRouter();
-
-  // Dados pessoais (obrigatórios)
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
+  const insets = useSafeAreaInsets();
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -34,8 +31,7 @@ export default function SignupScreen() {
   };
 
   const validate = (): string | null => {
-    if (!firstName.trim()) return "Nome é obrigatório.";
-    if (!lastName.trim()) return "Sobrenome é obrigatório.";
+    if (!fullName.trim()) return "Nome é obrigatório.";
     if (!email.trim()) return "E-mail é obrigatório.";
     if (!EMAIL_REGEX.test(email)) return "Informe um e-mail válido.";
     if (!password) return "Senha é obrigatória.";
@@ -52,9 +48,16 @@ export default function SignupScreen() {
     }
 
     setError("");
+    setLoading(true);
+    
     try {
-      setLoading(true);
-      const { data } = await AuthService.signUp({email, password, firstName, lastName})
+      const { data } = await AuthService.signUp({
+        name: fullName,
+        email,
+        password,
+        
+        isVerified: true
+      })
       if (data) router.replace('/(tabs)')
     } catch (error) {
       console.error(error);
@@ -64,109 +67,108 @@ export default function SignupScreen() {
   };
 
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={styles.container}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <Image
-          source={require("../../assets/images/mainIcon.png")}
-          style={styles.image}
-        />
-        <View style={styles.headerText}>
-          <Text style={styles.titleApp}>
-            Apex{` `}
-            <Text style={{ color: "#ffd33d" }}>Aura</Text>
-          </Text>
-          <Text style={styles.span}>Crie sua conta</Text>
-        </View>
-      </View>
-
-      <View style={styles.form}>
-        {/* Seção: Dados pessoais */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <FontAwesome name="user" size={18} color="#ffd33d" />
-            <Text style={styles.sectionTitle}>Dados pessoais</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#25292e" }}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.headerContainer}>
+          <Image
+            source={require("../../assets/images/mainIcon.png")}
+            style={styles.image}
+          />
+          <View style={styles.headerText}>
+            <Text style={styles.titleApp}>
+              Apex{` `}
+              <Text style={{ color: "#ffd33d" }}>Aura</Text>
+            </Text>
+            <Text style={styles.span}>Crie sua conta</Text>
           </View>
-          <InputLogin
-            icon="user"
-            label="Nome"
-            placeholder="Seu nome"
-            value={firstName}
-            onChangeText={(t) => {
-              setFirstName(t);
-              clearError();
-            }}
-          />
-          <InputLogin
-            icon="user"
-            label="Sobrenome"
-            placeholder="Seu sobrenome"
-            value={lastName}
-            onChangeText={(t) => {
-              setLastName(t);
-              clearError();
-            }}
-          />
-          <InputLogin
-            icon="at"
-            label="E-mail"
-            placeholder="exemplo@mail.com"
-            value={email}
-            onChangeText={(t) => {
-              setEmail(t);
-              clearError();
-            }}
-          />
-          <InputLogin
-            icon="lock"
-            label="Senha"
-            placeholder="Mínimo 6 caracteres"
-            value={password}
-            onChangeText={(t) => {
-              setPassword(t);
-              clearError();
-            }}
-            password
-          />
-          <InputLogin
-            icon="lock"
-            label="Confirmar senha"
-            placeholder="Repita a senha"
-            value={confirmPassword}
-            onChangeText={(t) => {
-              setConfirmPassword(t);
-              clearError();
-            }}
-            password
-          />
         </View>
 
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        <View style={styles.form}>
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <FontAwesome name="user" size={18} color="#ffd33d" />
+              <Text style={styles.sectionTitle}>Dados pessoais</Text>
+            </View>
 
-        <Pressable style={styles.submitButton} onPress={onSignup}>
-          {loading ? (
-            <ActivityIndicator size="small" color="#25292e" />
-          ) : (
-            <>
-              <Text style={styles.submitButtonText}>Criar conta</Text>
-              <FontAwesome6 name="user-plus" size={18} color="#25292e" />
-            </>
-          )}
-        </Pressable>
-      </View>
+            <InputLogin
+              icon="user"
+              label="Nome"
+              placeholder="Seu nome"
+              value={fullName}
+              onChangeText={(t) => {
+                setFullName(t);
+                clearError();
+              }}
+            />
+            <InputLogin
+              icon="at"
+              label="E-mail"
+              placeholder="exemplo@mail.com"
+              value={email}
+              onChangeText={(t) => {
+                setEmail(t);
+                clearError();
+              }}
+            />
+            <InputLogin
+              icon="lock"
+              label="Senha"
+              placeholder="Mínimo 6 caracteres"
+              value={password}
+              onChangeText={(t) => {
+                setPassword(t);
+                clearError();
+              }}
+              password
+            />
+            <InputLogin
+              icon="lock"
+              label="Confirmar senha"
+              placeholder="Repita a senha"
+              value={confirmPassword}
+              onChangeText={(t) => {
+                setConfirmPassword(t);
+                clearError();
+              }}
+              password
+            />
+          </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          Já possui uma conta?{" "}
-          <Link href="/login" style={styles.footerLink}>
-            Entrar
-          </Link>
-        </Text>
-      </View>
-    </KeyboardAwareScrollView>
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.submitButton,
+              pressed && { opacity: 0.85 },
+            ]}
+            onPress={onSignup}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#25292e" />
+            ) : (
+              <>
+                <Text style={styles.submitButtonText}>Criar conta</Text>
+                <FontAwesome6 name="user-plus" size={18} color="#25292e" />
+              </>
+            )}
+          </Pressable>
+        </View>
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            Já possui uma conta?{" "}
+            <Link href="/login" style={styles.footerLink}>
+              Entrar
+            </Link>
+          </Text>
+        </View>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -181,7 +183,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   image: {
     width: 80,
@@ -190,7 +192,6 @@ const styles = StyleSheet.create({
   headerText: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 8,
   },
   titleApp: {
     fontSize: 28,
@@ -206,7 +207,7 @@ const styles = StyleSheet.create({
     maxWidth: 400,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 14,
   },
   sectionHeader: {
     flexDirection: "row",

@@ -23,7 +23,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       const data = await AuthService.signIn(emailAddress, password);
-      console.log(data.access_token);
+      
       storage.set("token", data.access_token);
       storage.set("type_token", 'Bearer');
 
@@ -77,9 +77,10 @@ export default function LoginScreen() {
         </View>
       </View>
 
-      {/* Espaço para informações de login */}
-      <View style={styles.dataContainer} >
+      <View style={styles.sectionLogin}>
+        {/* Espaço para informações de login */}
         <InputLogin
+          error={error !== ""}
           icon="at"
           label="Email"
           placeholder="exemple@mail.com"
@@ -87,6 +88,7 @@ export default function LoginScreen() {
           onChangeText={handleEmailChange}
         />
         <InputLogin
+          error={error !== ""}
           icon="lock"
           label="Senha"
           placeholder="******"
@@ -95,9 +97,7 @@ export default function LoginScreen() {
           password
         />
         {error && <Text style={styles.errorText}>{error}</Text>}
-      </View>
 
-      <View style={styles.section2}>
         <Pressable style={styles.loginButton} onPress={handleLogin /* signInWithEmail */} disabled={loading}>
           {loading ?
             <ActivityIndicator size="small" color="#25292e" />
@@ -111,19 +111,20 @@ export default function LoginScreen() {
           }
         </Pressable>
 
-        <Br label="Ou conecte-se"/>
-      </View>
+        <View style={styles.footer}>
+          <Text style={{ fontSize: 14, color: "#a1a1a1" }}>
+            Ainda nao possui uma conta?
+            <Link href="/signup" style={{ color: "#ffd33d" }}> Clique aqui</Link>
+          </Text>
+        </View>
 
-      <View style={styles.section3}>
-        {/* <GoogleAccess /> */}
-        <GithubAccess onPress={signInWithOAuthGithub}/>
-      </View>
+        <View style={styles.section3}>
+          <Br label="ou entre com" />
+        </View>
 
-      <View style={styles.footer}>
-        <Text style={{ color: "#a1a1a1" }}>
-          Ainda nao possui uma conta?
-          <Link href="/authentication" style={{ color: "#ffd33d" }}> Clique aqui</Link>
-        </Text>
+        <View style={styles.section3}>
+          <GithubAccess onPress={signInWithOAuthGithub} />
+        </View>
       </View>
     </KeyboardAwareScrollView>
   );
@@ -135,22 +136,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#25292e",
     alignItems: "center",
     justifyContent: "center",
-    gap: 16
+    gap: 12
   },
   headerContainer: {
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   image: {
-    width: 100,
-    height: 100
+    width: 150,
+    height: 150
   },
   headerText: {
     alignItems: "center",
     justifyContent: "center"
   },
   titleApp: {
-    fontSize: 32,
+    fontSize: 42,
     fontWeight: "bold",
     color: "#fff"
   },
@@ -158,8 +159,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#a1a1a1"
   },
-  dataContainer: {
-    width: "80%"
+  sectionLogin: {
+    width: "80%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   errorText: {
     color: "#ff6b6b",
@@ -168,32 +171,31 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   loginButton: {
+    marginTop: 24,
     backgroundColor: "#ffd33d",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
     height: 48,
-    borderRadius: 16,
-    marginBottom: 16,
+    borderRadius: 32,
     gap: 16
   },
-  section2: {
-    width: "80%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   section3: {
-    width: "80%",
+    marginTop: 24,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 16
   },
-  footer: {
+  br: {
     width: "80%",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 8
+  },
+  footer: {
+    marginTop: 8,
+    alignItems: "center",
+    justifyContent: "center",
   }
 });

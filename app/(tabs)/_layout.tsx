@@ -8,13 +8,13 @@ export default function TabsLayout() {
         tabBarActiveTintColor: "#fdf038",
         tabBarStyle: { backgroundColor: "#25292e" },
         headerTintColor: "#fff",
+        tabBarHideOnKeyboard: true,
+        headerShown: false,
         headerShadowVisible: false,
         headerTitleAlign: "center",
         headerStyle: {
           backgroundColor: "#25292e"
         },
-        tabBarHideOnKeyboard: true,
-        headerShown: true,
       }}
     >
       <Tabs.Screen

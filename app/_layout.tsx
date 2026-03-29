@@ -17,7 +17,7 @@ export default function RootLayout() {
       console.log("Checking auth session...");
 
       const token = storage.getString("token");
-
+      console.log("[GLOBAL LAYOUT]: Token =>", token);
       if (!token) {
         setIsAuthenticated(false);
         return;
