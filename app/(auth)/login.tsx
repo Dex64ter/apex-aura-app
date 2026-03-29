@@ -2,6 +2,7 @@ import Br from "@/components/Br";
 import GithubAccess from "@/components/GithubAccess";
 import InputLogin from "@/components/InputLogin";
 import { AuthService } from "@/services";
+import { apiClient } from "@/services/http/api";
 import { storage } from "@/storage";
 import { supabase } from "@/utils/supabase";
 import { FontAwesome6 } from "@expo/vector-icons";
@@ -35,16 +36,16 @@ export default function LoginScreen() {
   }
 
   const signInWithOAuthGithub = async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "github",
-    })
+    // const { data, error } = await supabase.auth.signInWithOAuth({
+    //   provider: "github",
+    // })
+
+    const data = await apiClient.get(`/auth/oauth/github`);
 
     if (error) {
       console.log("OAuth login error:", error);
       setError("Erro ao tentar logar com GitHub. Por favor tente novamente.");
     }
-
-    console.log("OAuth login data:", data ? "No data returned" : data);
 
   }
 
