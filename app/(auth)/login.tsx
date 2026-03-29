@@ -1,14 +1,14 @@
 import Br from "@/components/Br";
 import GithubAccess from "@/components/GithubAccess";
-import GoogleAccess from "@/components/GoogleAccess";
 import InputLogin from "@/components/InputLogin";
+import { AuthService } from "@/services";
+import { storage } from "@/storage";
 import { supabase } from "@/utils/supabase";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-// import { createMMKV } from "react-native-mmkv";
 
 export default function LoginScreen() {
   const [emailAddress, setEmailAddress] = useState("");
@@ -17,27 +17,21 @@ export default function LoginScreen() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const signInWithEmail = async () => {
+  const handleLogin = async () => {
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: emailAddress,
-      password: password,
-      // options: {
-      //   captchaToken: "captcha-token"
-      // }
-    })
-    console.log("Login data:", data);
-
-    if (error) {
-      console.log("Login error:", error);
+    try {
+      const data = await AuthService.signIn(emailAddress, password);
+      console.log(JSON.stringify(data, null, 2))
+      storage.set("token", data.access_token);
+      storage.set("type_token", 'Bearer');
+      storage.set("user", JSON.stringify(data.user));
+      if (data) router.replace("/(tabs)")
+    } catch (error) {
       setError("E-mail ou senha inválidos. Por favor verifique suas credenciais ou cadastre-se");
+      console.log("Login error:", error);
+    } finally {
+      setLoading(false);
     }
-
-    if (data.session && data.session.user.email) {
-      router.replace("/(tabs)");
-    }
-
-    setLoading(false);
   }
 
   const signInWithOAuthGithub = async () => {
@@ -50,7 +44,7 @@ export default function LoginScreen() {
       setError("Erro ao tentar logar com GitHub. Por favor tente novamente.");
     }
 
-    console.log("OAuth login data:", data);
+    console.log("OAuth login data:", data ? "No data returned" : data);
 
   }
 
@@ -69,7 +63,7 @@ export default function LoginScreen() {
     <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       {/* Símbolo, Título e Subtítulo do aplicativo */}
       <View style={styles.headerContainer} >
-        <Image source={require('../../assets/images/emj04.png')} style={styles.image}/>
+        <Image source={require('../../assets/images/mainIcon.png')} style={styles.image}/>
         <View style={styles.headerText} >
           <Text style={styles.titleApp}>
             Apex{` `}
@@ -81,9 +75,10 @@ export default function LoginScreen() {
         </View>
       </View>
 
-      {/* Espaço para informações de login */}
-      <View style={styles.dataContainer} >
+      <View style={styles.sectionLogin}>
+        {/* Espaço para informações de login */}
         <InputLogin
+          error={error !== ""}
           icon="at"
           label="Email"
           placeholder="exemple@mail.com"
@@ -91,6 +86,7 @@ export default function LoginScreen() {
           onChangeText={handleEmailChange}
         />
         <InputLogin
+          error={error !== ""}
           icon="lock"
           label="Senha"
           placeholder="******"
@@ -99,10 +95,8 @@ export default function LoginScreen() {
           password
         />
         {error && <Text style={styles.errorText}>{error}</Text>}
-      </View>
 
-      <View style={styles.section2}>
-        <Pressable style={styles.loginButton} onPress={signInWithEmail} disabled={loading}>
+        <Pressable style={styles.loginButton} onPress={handleLogin /* signInWithEmail */} disabled={loading}>
           {loading ?
             <ActivityIndicator size="small" color="#25292e" />
             :
@@ -115,19 +109,20 @@ export default function LoginScreen() {
           }
         </Pressable>
 
-        <Br label="Ou conecte-se"/>
-      </View>
+        <View style={styles.footer}>
+          <Text style={{ fontSize: 14, color: "#a1a1a1" }}>
+            Ainda nao possui uma conta?
+            <Link href="/signup" style={{ color: "#ffd33d" }}> Clique aqui</Link>
+          </Text>
+        </View>
 
-      <View style={styles.section3}>
-        <GoogleAccess />
-        <GithubAccess onPress={signInWithOAuthGithub}/>
-      </View>
+        <View style={styles.section3}>
+          <Br label="ou entre com" />
+        </View>
 
-      <View style={styles.footer}>
-        <Text style={{ color: "#a1a1a1" }}>
-          Ainda nao possui uma conta?
-          <Link href="/signup" style={{ color: "#ffd33d" }}> Clique aqui</Link>
-        </Text>
+        <View style={styles.section3}>
+          <GithubAccess onPress={signInWithOAuthGithub} />
+        </View>
       </View>
     </KeyboardAwareScrollView>
   );
@@ -139,22 +134,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#25292e",
     alignItems: "center",
     justifyContent: "center",
-    gap: 16
+    gap: 12
   },
   headerContainer: {
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   image: {
-    width: 100,
-    height: 100
+    width: 150,
+    height: 150
   },
   headerText: {
     alignItems: "center",
     justifyContent: "center"
   },
   titleApp: {
-    fontSize: 32,
+    fontSize: 42,
     fontWeight: "bold",
     color: "#fff"
   },
@@ -162,8 +157,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#a1a1a1"
   },
-  dataContainer: {
-    width: "80%"
+  sectionLogin: {
+    width: "80%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   errorText: {
     color: "#ff6b6b",
@@ -172,32 +169,31 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   loginButton: {
+    marginTop: 24,
     backgroundColor: "#ffd33d",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
     height: 48,
-    borderRadius: 16,
-    marginBottom: 16,
+    borderRadius: 32,
     gap: 16
   },
-  section2: {
-    width: "80%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   section3: {
-    width: "80%",
+    marginTop: 24,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 16
   },
-  footer: {
+  br: {
     width: "80%",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 8
+  },
+  footer: {
+    marginTop: 8,
+    alignItems: "center",
+    justifyContent: "center",
   }
 });

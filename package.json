@@ -19,6 +19,7 @@
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
     "@supabase/supabase-js": "^2.95.3",
+    "axios": "^1.13.6",
     "dom-to-image": "^2.6.0",
     "expo": "~54.0.32",
     "expo-constants": "~18.0.13",

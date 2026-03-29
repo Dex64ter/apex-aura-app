@@ -81,8 +81,7 @@ export default function NotificationsScreen() {
 
   return (
     <ScrollView
-      style={styles.scroll}
-      contentContainerStyle={styles.container}
+      contentContainerStyle={styles.scroll}
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.header}>
@@ -108,7 +107,7 @@ export default function NotificationsScreen() {
             <Pressable
               key={item.id}
               style={[styles.notifCard, !item.read && styles.notifCardUnread]}
-              onPress={() => {}}
+              onPress={() => { }}
               android_ripple={{ color: "rgba(255,211,61,0.1)" }}
             >
               <View style={styles.notifIconWrap}>
@@ -142,10 +141,8 @@ const styles = StyleSheet.create({
   scroll: {
     flex: 1,
     backgroundColor: "#25292e",
-  },
-  container: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 20,
     paddingBottom: 32,
   },
   header: {

@@ -7,17 +7,18 @@ type Props = {
   password?: boolean;
   label: string;
   placeholder?: string;
+  error?: boolean;
   value: string;
   onChangeText: (text: string) => void;
 }
 
-export default function InputLogin({ icon, password, label, placeholder, onChangeText, value }: Props) {
+export default function InputLogin({ icon, password, label, placeholder, onChangeText, value, error }: Props) {
   const [showPassword, setShowPassword] = useState(password ? true : false);
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, { borderColor: error ? "#ff0000" : "#5b5b5b" }]}>
         {icon && <FontAwesome name={icon} size={18} color="white" />}
         <TextInput
           autoCapitalize="none"
@@ -47,14 +48,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#fff",
     marginBottom: 8,
-    marginLeft: 12
+    // marginLeft: 12
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#5b5b5b',
-    borderRadius: 16,
+    borderRadius: 22,
     paddingHorizontal: 16,
     paddingVertical: 6,
     marginBottom: 16,

@@ -1,5 +1,6 @@
-import { supabase } from "@/utils/supabase";
-import { Session } from "@supabase/supabase-js";
+// import { Session } from "@supabase/supabase-js";
+import { apiClient } from "@/services/http/api";
+import { storage } from "@/storage";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -8,42 +9,49 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  const [session, setSession] = useState<Session | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const checkAuth = async () => {
+    const token = storage.getString("token");
+    if (!token) {
+      setIsAuthenticated(false);
+      return;
+    }
+    try {
+      await apiClient.get("/auth/me");
+      setIsAuthenticated(true);
+    } catch {
+      setIsAuthenticated(false);
+    }
+  };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("session", session);
-      setSession(session);
-      setIsInitialized(true);
+    checkAuth();
+
+    const listener = storage.addOnValueChangedListener((key) => {
+      if (key === "token") checkAuth();
     });
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
+    return () => listener.remove();
   }, []);
 
   useEffect(() => {
-    if (!isInitialized) return;
+    if (isAuthenticated === null) return;
 
     const inAuthGroup = segments[0] === "(auth)";
 
-    if (!session && !inAuthGroup) {
+    if (!isAuthenticated && !inAuthGroup) {
       router.replace("/(auth)/login");
-    } else if (session && inAuthGroup) {
+    }
+
+    if (isAuthenticated && inAuthGroup) {
       router.replace("/(tabs)");
     }
 
-  }, [segments, session, isInitialized, router]);
+  }, [segments, isAuthenticated, router]);
 
-  if (!isInitialized) {
-    return null; // Ou um componente de carregamento
-  }
+  if (isAuthenticated === null) return null;
+  
 
   return (
     <KeyboardProvider>
