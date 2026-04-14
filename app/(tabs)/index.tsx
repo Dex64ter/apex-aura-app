@@ -72,7 +72,9 @@ const RECENT_ACTIVITIES = [
 export default function Index() {
   const iconTituloAtual = useMemo(() => storage.getString("icon_titulo_atual") as keyof typeof Ionicons.glyphMap, []);
   const tituloAtual = useMemo(() => storage.getString("titulo_atual") ?? "", []);
-  const { name, aura } = useMemo(() => JSON.parse(storage.getString("user") ?? ""), []);
+  const name = 'Davi'
+  const aura = '1200'
+  // const { name, aura } = useMemo(() => JSON.parse(storage.getString("user") ?? ""), []);
 
   return (
     <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>

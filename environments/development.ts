@@ -1,7 +1,7 @@
 const development = {
   provider: 'nest', // 'nest' as 'nest'
   nest: {
-    apiUrl: 'http://192.168.1.28:8080',
+    apiUrl: 'api-node-apex-aura-homolog.up.railway.app',
     timeout: 10000,
   }
 }
